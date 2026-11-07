@@ -1,0 +1,55 @@
+name: Build unsigned iOS IPA
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    env:
+      CI: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: Check on-device media module is linked
+        run: |
+          npx expo-modules-autolinking resolve --platform apple --json > native-modules.json
+          node -e "const fs = require('fs'); const data = JSON.parse(fs.readFileSync('native-modules.json', 'utf8')); if (!data.modules.some(m => m.packageName === 'pocket-media')) throw new Error('PocketMedia native module is missing');"
+      - name: Generate native iOS project
+        run: npx expo prebuild --platform ios --no-install
+      - name: Install native dependencies
+        working-directory: ios
+        run: pod install
+      - name: Compile for physical iPhone without signing credentials
+        run: |
+          xcodebuild \
+            -workspace ios/PocketVideo.xcworkspace \
+            -scheme PocketVideo \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+      - name: Package IPA for personal signing
+        run: |
+          mkdir -p package/Payload
+          ditto build/Build/Products/Release-iphoneos/PocketVideo.app package/Payload/PocketVideo.app
+          cd package
+          zip -qry ../PocketVideo-unsigned.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PocketVideo-unsigned
+          path: PocketVideo-unsigned.ipa
+          retention-days: 3

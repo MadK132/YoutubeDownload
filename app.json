@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "Pocket Video",
+    "slug": "pocket-video",
+    "scheme": "pocketvideo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.personal.pocketvideo",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Разрешите доступ для сохранения ваших видео.",
+          "savePhotosPermission": "Разрешите сохранять скачанные видео в Фото.",
+          "granularPermissions": [
+            "video"
+          ]
+        }
+      ],
+      "expo-video",
+      "expo-status-bar",
+      "expo-sharing",
+      "expo-image",
+      "expo-font",
+      "expo-asset"
+    ],
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}

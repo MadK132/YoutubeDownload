@@ -1,0 +1,15 @@
+node_modules/
+.expo/
+.companion/
+dist/
+dist-ios/
+ios/
+android/
+web-build/
+*.tsbuildinfo
+.env*
+!.env.example
+*.ipa
+*.p12
+*.mobileprovision
+credentials.json
