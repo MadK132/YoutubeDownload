@@ -14,6 +14,15 @@ jobs:
       CI: '1'
     steps:
       - uses: actions/checkout@v4
+      - name: Check required native source files
+        shell: bash
+        run: |
+          for file in modules/pocket-media/ios/PocketMediaModule.swift modules/pocket-media/ios/PocketMedia.podspec; do
+            if [ ! -f "$file" ]; then
+              echo "::error file=.gitignore::Missing $file. Track the modules/pocket-media/ios directory; ignore only /ios/ at the repository root."
+              exit 1
+            fi
+          done
       - uses: actions/setup-node@v4
         with:
           node-version: '24'

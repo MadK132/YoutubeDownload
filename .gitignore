@@ -3,8 +3,8 @@ node_modules/
 .companion/
 dist/
 dist-ios/
-ios/
-android/
+/ios/
+/android/
 web-build/
 *.tsbuildinfo
 .env*
